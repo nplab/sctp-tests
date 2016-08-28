@@ -1,0 +1,18 @@
+#!/usr/bin/env tcsh
+
+set timeout = 60
+set delay = 0
+
+set testcases = (sctp-checksum-crc32c-with-padding \
+                 sctp-checksum-adler32-with-padding \
+                 sctp-checksum-zero-with-padding \
+                 sctp-checksum-wrong-with-padding \
+                 sctp-checksum-crc32c-without-padding \
+                 sctp-checksum-adler32-without-padding \
+                 sctp-checksum-zero-without-padding \
+                 sctp-checksum-wrong-without-padding )
+
+foreach testcase ($testcases)
+  (runsctptest -t $timeout $testcase > /dev/tty) >& /dev/null
+  sleep $delay
+end
