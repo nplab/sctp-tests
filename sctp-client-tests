@@ -7,9 +7,9 @@ set testcases = (sctp-as-i-1-3-1  \
                  sctp-as-v-1-5-1  \
                  sctp-as-v-1-6-2  \
                  sctp-as-i-1-14-2 \
-                 sctp-imh-i-3-2   \
                  sctp-at-v-2-2    \
                  sctp-at-i-2-11   \
+                 sctp-imh-i-3-2   \
                  sctp-imh-i-3-7   \
                  sctp-dm-o-4-7-2  \
                  sctp-fh-v-5-2    \
