@@ -5,3 +5,10 @@ The tests are based on the ETSI test specification
 
 ## Requirements
 This tool uses [stt](https://github.com/nplab/stt).
+
+## Installation
+### Linux (Ubuntu)
+### FreeBSD
+### Mac OS X
+
+## Configuration
