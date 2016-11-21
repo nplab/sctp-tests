@@ -60,8 +60,10 @@
 					    tester-os 
 					    tester-mis
 					    local-tsn 
-					    (vector (make-ipv4-address-parameter tester-addr-1)
-						    (make-ipv4-address-parameter tester-addr-2))))
+					    (if (equal? tester-addr-1 tester-addr-2)
+						(vector)
+						(vector (make-ipv4-address-parameter tester-addr-1)
+							(make-ipv4-address-parameter tester-addr-2)))))
 		   peer-addr)
 	(let* ((answer       (sctp-receive-chunk init-ack-chunk?))
 	       (init-ack     (vector-ref (cadr answer) 0))
@@ -244,7 +246,10 @@
   (let ((local-tag  (choose-local-tag))
 	(local-tsn  (random (expt 2 32))))
     (sctp-send (make-common-header local-port peer-port 0)
-	       (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn #()))
+	       (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn  (if (equal? tester-addr-1 tester-addr-2)
+											   (vector)
+											   (vector (make-ipv4-address-parameter tester-addr-1)
+												   (make-ipv4-address-parameter tester-addr-2)))))
 	       peer-addr)
     (let* ((answer       (sctp-receive-chunk init-ack-chunk?))
 	   (init-ack     (vector-ref (cadr answer) 0))

@@ -76,7 +76,10 @@
       (let ((local-tag  (choose-local-tag))
 	    (local-tsn  (random (expt 2 32))))
 	(sctp-send (make-common-header local-port peer-port 0)
-		   (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn #()))
+		   (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn (if (equal? tester-addr-1 tester-addr-2)
+											      (vector)
+											      (vector (make-ipv4-address-parameter tester-addr-1)
+												      (make-ipv4-address-parameter tester-addr-2)))))
 		   peer-addr)
 	(let* ((answer       (sctp-receive-chunk init-ack-chunk?))
 	       (init-ack     (vector-ref (cadr answer) 0))
@@ -112,7 +115,11 @@
 						  (1+ (get-mis init))
 						  (get-mos init)
 						  local-tsn
-						  (vector (make-cookie-parameter (vector 1)))))
+						  (list->vector (cons (make-cookie-parameter (vector 1))
+								      (if (equal? tester-addr-1 tester-addr-2)
+									  (list)
+									  (list (make-ipv4-address-parameter tester-addr-1)
+										(make-ipv4-address-parameter tester-addr-2))))))
 		     peer-addr)))
       stt-test-result-not-applicable))
 
@@ -255,7 +262,7 @@
 		stt-test-result-passed))))
       stt-test-result-not-applicable))
 
-(define (sctp-malformd-stream-reset-request peer-server? peer-addr local-port peer-port)
+(define (sctp-malformed-stream-reset-request peer-server? peer-addr local-port peer-port)
   (sctp-cleanup)
   (if peer-server?
       (let ((local-tag  (choose-local-tag))

@@ -125,7 +125,11 @@
 	     (local-header (make-common-header local-port peer-port peer-tag)))
 	(sctp-send local-header 
 		   (vector (make-init-ack-chunk (random (expt 2 32)) 1500 tester-os tester-mis 0 
-						(vector (make-cookie-parameter (make-ascii-bytes "Hallo Peer"))))) 
+						(list->vector (cons (make-cookie-parameter (vector 1))
+								    (if (equal? tester-addr-1 tester-addr-2)
+									(list)
+									(list (make-ipv4-address-parameter tester-addr-1)
+									      (make-ipv4-address-parameter tester-addr-2)))))))
 		   peer-addr)
 	(sctp-receive-chunk cookie-echo-chunk?)
 	(dotimes (i sut-maximum-init-retransmits)
@@ -170,7 +174,10 @@
 		  ;; Just try the random number...
 		  (if (positive? local-port)
 		      (sctp-send (make-common-header local-port peer-port 0)
-				 (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn #()))
+				 (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn (if (equal? tester-addr-1 tester-addr-2)
+													    (vector)
+													    (vector (make-ipv4-address-parameter tester-addr-1)
+														    (make-ipv4-address-parameter tester-addr-2)))))
 				 peer-addr)
 		      ;; Wait for the INIT-ACK chunk but do not send a COOKIE-ECHO chunk.
 		      (sctp-receive-chunk init-ack-chunk?))))
@@ -244,7 +251,10 @@
       (sctp-send (make-common-header (get-source-port header)
 				     (get-destination-port header)
 				     0)
-		 (vector (make-init-chunk (random (expt 2 32)) 1500 tester-os tester-mis 0 (vector)))
+		 (vector (make-init-chunk (random (expt 2 32)) 1500 tester-os tester-mis 0 (if (equal? tester-addr-1 tester-addr-2)
+											       (vector)
+											       (vector (make-ipv4-address-parameter tester-addr-1)
+												       (make-ipv4-address-parameter tester-addr-2)))))
 		 peer-addr)
       (let ((result (sctp-receive-chunk init-ack-chunk?)))
 	(set! taglist (cons (get-initiate-tag (vector-ref (cadr result) 0)) taglist))))))
@@ -346,7 +356,10 @@
       (let ((local-tag  (choose-local-tag))
 	    (local-tsn  (random (expt 2 32))))
 	(sctp-send (make-common-header local-port peer-port 0)
-		   (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn #()))
+		   (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn (if (equal? tester-addr-1 tester-addr-2)
+											      (vector)
+											      (vector (make-ipv4-address-parameter tester-addr-1)
+												      (make-ipv4-address-parameter tester-addr-2)))))
 		   peer-addr)
 	(let* ((answer       (sctp-receive-chunk init-ack-chunk?))
 	       (init-ack     (vector-ref (cadr answer) 0))
@@ -380,8 +393,11 @@
       (let ((local-tag  (choose-local-tag))
 	    (local-tsn  (random (expt 2 32))))
 	(sctp-send (make-common-header local-port peer-port 0)
-		   (vector (make-init-chunk local-tag 1500 0 tester-mis local-tsn #()))
-		   peer-addr)   
+		   (vector (make-init-chunk local-tag 1500 0 tester-mis local-tsn (if (equal? tester-addr-1 tester-addr-2)
+										      (vector)
+										      (vector (make-ipv4-address-parameter tester-addr-1)
+											      (make-ipv4-address-parameter tester-addr-2)))))
+		   peer-addr)
 	(let ((result (sctp-receive 1000)))
 	  (if (equal? result (list #f #f #f #f #f))
 	      stt-test-result-passed
@@ -411,7 +427,11 @@
 	       (peer-tag     (get-initiate-tag init))
 	       (header       (make-common-header local-port peer-port peer-tag)))
 	  (sctp-send header
-		     (vector (make-init-ack-chunk local-tag 1500 tester-os tester-mis local-tsn (vector (make-cookie-parameter (vector 1)))))
+		     (vector (make-init-ack-chunk local-tag 1500 tester-os tester-mis local-tsn (list->vector (cons (make-cookie-parameter (vector 1))
+														    (if (equal? tester-addr-1 tester-addr-2)
+															(list)
+															(list (make-ipv4-address-parameter tester-addr-1)
+															      (make-ipv4-address-parameter tester-addr-2)))))))
 		     peer-addr)
 	  (sctp-receive-chunk cookie-echo-chunk?)
 	  (sctp-send header
@@ -444,8 +464,12 @@
 	     (local-port (get-destination-port peer-header))
 	     (local-header (make-common-header local-port peer-port peer-tag)))
 	(sctp-send local-header 
-		   (vector (make-init-ack-chunk (random (expt 2 32)) 1500 0 tester-mis 0 
-						(vector (make-cookie-parameter (make-ascii-bytes "Hallo Peer")))))
+		   (vector (make-init-ack-chunk (random (expt 2 32)) 1500 0 tester-mis 0
+						(list->vector (cons (make-cookie-parameter (make-ascii-bytes "Hallo Peer"))
+								    (if (equal? tester-addr-1 tester-addr-2)
+									(list)
+									(list (make-ipv4-address-parameter tester-addr-1)
+									      (make-ipv4-address-parameter tester-addr-2)))))))
 		   peer-addr)
 	(let ((result (sctp-receive 1000)))
 	  (sctp-send local-header
@@ -471,7 +495,10 @@
       (let ((local-tag  (choose-local-tag))
 	    (local-tsn  (random (expt 2 32))))
 	(sctp-send (make-common-header local-port peer-port 0)
-		   (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn #()))
+		   (vector (make-init-chunk local-tag 1500 tester-os tester-mis local-tsn (if (equal? tester-addr-1 tester-addr-2)
+											      (vector)
+											      (vector (make-ipv4-address-parameter tester-addr-1)
+												      (make-ipv4-address-parameter tester-addr-2)))))
 		   peer-addr)   
 	(let ((result (sctp-receive 1000)))
 	  (if (equal? result (list #f #f #f #f #f))
@@ -849,8 +876,12 @@
 	     (local-port (get-destination-port peer-header))
 	     (local-header (make-common-header local-port peer-port peer-tag)))
 	(sctp-send local-header 
-		   (vector (make-init-ack-chunk (random (expt 2 32)) 1500 tester-os tester-mis 0 
-						(vector (make-cookie-parameter (make-ascii-bytes "Hallo Peer"))))) 
+		   (vector (make-init-ack-chunk (random (expt 2 32)) 1500 tester-os tester-mis 0
+						(list->vector (cons (make-cookie-parameter (make-ascii-bytes "Hallo Peer"))
+								    (if (equal? tester-addr-1 tester-addr-2)
+									(list)
+									(list (make-ipv4-address-parameter tester-addr-1)
+									      (make-ipv4-address-parameter tester-addr-2)))))))
 		   peer-addr)
 	(sctp-receive-chunk cookie-echo-chunk?)
 	(sctp-send local-header 
@@ -876,8 +907,10 @@
 					    tester-os
 					    tester-mis
 					    local-tsn
-					    (vector (make-ipv4-address-parameter local-addr-1)
-						    (make-ipv4-address-parameter local-addr-2))))
+					    (if (equal? tester-addr-1 tester-addr-2)
+						(vector)
+						(vector (make-ipv4-address-parameter tester-addr-1)
+							(make-ipv4-address-parameter tester-addr-2)))))
 		   peer-address)
 	(let* ((answer       (sctp-receive-chunk init-ack-chunk?))
 	       (init-ack     (vector-ref (cadr answer) 0))
@@ -1003,7 +1036,10 @@
 					    tester-mis
 					    local-tsn
 					    (vector (make-supported-address-type-parameter (vector 5 6)))	
-					    ))
+					    (if (equal? tester-addr-1 tester-addr-2)
+						(vector)
+						(vector (make-ipv4-address-parameter tester-addr-1)
+							(make-ipv4-address-parameter tester-addr-2)))))
 		   peer-addr)
 	(sctp-receive-chunk init-ack-chunk?)
 	(sctp-send (make-common-header local-port peer-port 0)
@@ -1028,7 +1064,10 @@
 					    tester-mis
 					    local-tsn
 					    (vector (make-supported-address-type-parameter (vector 6)))	
-					    ))
+					    (if (equal? tester-addr-1 tester-addr-2)
+						(vector)
+						(vector (make-ipv4-address-parameter tester-addr-1)
+							(make-ipv4-address-parameter tester-addr-2)))))
 		   peer-addr)
 	(sctp-receive-chunk (lambda (chunk) (or (abort-chunk? chunk)
 					       (init-ack-chunk? chunk))))
@@ -1081,7 +1120,12 @@
 	     (local-port (get-destination-port peer-header))
 	     (local-header (make-common-header local-port peer-port peer-tag)))
 	(sctp-send local-header 
-		   (vector (make-init-ack-chunk 0 1500 tester-os tester-mis 0 (vector (make-cookie-parameter (make-ascii-bytes "Hello")))))
+		   (vector (make-init-ack-chunk 0 1500 tester-os tester-mis 0
+						(list->vector (cons (make-cookie-parameter (make-ascii-bytes "Hello"))
+								    (if (equal? tester-addr-1 tester-addr-2)
+									(list)
+									(list (make-ipv4-address-parameter tester-addr-1)
+									      (make-ipv4-address-parameter tester-addr-2)))))))
 		   peer-addr)
  	(let ((result (sctp-receive 3000)))
 	  (if (equal? result (list #f #f #f #f #f))
