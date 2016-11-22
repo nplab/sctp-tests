@@ -119,7 +119,7 @@
 								      (if (equal? tester-addr-1 tester-addr-2)
 									  (list)
 									  (list (make-ipv4-address-parameter tester-addr-1)
-										(make-ipv4-address-parameter tester-addr-2))))))
+										(make-ipv4-address-parameter tester-addr-2)))))))
 		     peer-addr)))
       stt-test-result-not-applicable))
 
