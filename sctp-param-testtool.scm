@@ -43,6 +43,10 @@
 ;;; For SGsAP use ulp-echo
 (define upper-layer-protocol ulp-echo)
 
+;;; When using different addresses for tester-addr-1 and
+;;; tester-addr-2, connection setups using dual-homing will be used.
+;;; When using the same address for tester-addr-1 and
+;;; tester-addr-2, connection setups using single-homing will be used.
 (define tester-port 5001)
 (define tester-addr-1 (make-ipv4-address "192.168.1.100"))
 (define tester-addr-2 (make-ipv4-address "192.168.1.200"))
