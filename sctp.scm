@@ -159,6 +159,8 @@
       (cond
        ((= upper-layer-protocol ulp-echo)
 	(list header local-tsn (get-initial-tsn init-ack) peer-addr))
+       ((= upper-layer-protocol ulp-http)
+	(list header local-tsn (get-initial-tsn init-ack) peer-addr))
        ((= upper-layer-protocol ulp-m3ua)
 	(list header local-tsn (get-initial-tsn init-ack) peer-addr))
        ((= upper-layer-protocol ulp-diameter)
@@ -220,6 +222,8 @@
       (sleep tester-handshake-wait)
       (cond 
        ((= upper-layer-protocol ulp-echo)
+	(list header local-tsn (get-initial-tsn init) peer-addr))
+       ((= upper-layer-protocol ulp-http)
 	(list header local-tsn (get-initial-tsn init) peer-addr))
        ((= upper-layer-protocol ulp-m3ua)
 	(sctp-receive-chunk data-chunk?)
