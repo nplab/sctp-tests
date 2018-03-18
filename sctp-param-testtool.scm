@@ -30,7 +30,7 @@
 
 ;;; $Id: sctp-param-testtool.scm,v 1.13 2014/11/17 14:55:29 tuexen Exp $
 
-(define sut-addr (make-ipv4-address "192.168.1.244"))
+(define sut-addr (make-ipv4-address "212.201.121.100"))
 (define sut-port 80)
 
 ;;; valid values are #t (true) or #f (false)
@@ -39,17 +39,18 @@
 (define sut-maximum-init-retransmits 8)
 (define sut-maximum-assoc-retransmits 10)
 
-;;; valid values are ulp-diameter, ulp-echo, ulp-m3ua, or ulp-s1ap
+;;; valid values are ulp-diameter, ulp-echo, ulp-http, ulp-m3ua, or ulp-s1ap
 ;;; For SGsAP use ulp-echo
-(define upper-layer-protocol ulp-echo)
+(define upper-layer-protocol ulp-http)
 
 ;;; When using different addresses for tester-addr-1 and
 ;;; tester-addr-2, connection setups using dual-homing will be used.
 ;;; When using the same address for tester-addr-1 and
 ;;; tester-addr-2, connection setups using single-homing will be used.
 (define tester-port 5001)
-(define tester-addr-1 (make-ipv4-address "192.168.1.100"))
-(define tester-addr-2 (make-ipv4-address "192.168.1.200"))
+(define tester-addr-1 (make-ipv4-address "31.130.239.197"))
+(define tester-addr-2 (make-ipv6-address "2001:67c:1230:105:20c:29ff:fee8:11b2"))
+(define tester-addr-2 tester-addr-1)
 
 (define tester-os  2)
 (define tester-mis 2)
@@ -103,6 +104,7 @@
 				    (list 0 0 (quotient total-length 256) (remainder total-length 256))
 				    (list 0 9 (quotient (- total-length 8) 256) (remainder (- total-length 8) 256))
 				    (vector->list (make-random-bytes (- length 12)))))))
+(define http-test-message (map char->integer (string->list "GET /index.html HTTP/1.0\r\nUser-agent: stt\r\nConnection: close\r\n\r\n")))
 
 (define heartbeat-chunk (make-heartbeat-chunk (make-heartbeat-parameter (make-ascii-bytes "SCTP rocks."))))
 
@@ -115,6 +117,10 @@
   (set! test-ppid echo-ppid)
   (set! test-message (make-ascii-bytes "SCTP rocks."))
   (set! make-test-message make-echo-test-message))
+ ((= upper-layer-protocol ulp-http)
+;;;  (set! test-ppid http-ppid)
+  (set! test-message http-test-message))
+;;;  (set! make-test-message make-http-test-message))
  ((= upper-layer-protocol ulp-m3ua)
   (set! test-ppid m3ua-ppid)
   (set! test-message m3ua-beat-message)
