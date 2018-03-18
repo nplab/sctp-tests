@@ -44,15 +44,18 @@
 
 (define ulp-diameter     1)
 (define ulp-echo         2)
-(define ulp-m3ua         3)
-(define ulp-s1ap         4)
+(define ulp-http         3)
+(define ulp-m3ua         4)
+(define ulp-s1ap         5)
 
 (define diameter-port 3868)
 (define echo-port        7)
+(define http-port       80)
 (define m3ua-port     2905)
 
 (define diameter-ppid   46)
 (define echo-ppid       38)
+(define http-ppid        0)
 (define m3ua-ppid        3)
 (define s1ap-ppid       18)
 
