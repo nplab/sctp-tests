@@ -65,7 +65,7 @@
 	 (peer-addr (get-peer-addr tcb))
 	 (peer-tsn (get-remote-tsn tcb)))
     (sctp-send header 
-	       (vector (make-data-chunk local-tsn 0 0 test-ppid test-message))
+	       (vector (make-data-chunk local-tsn (if (= upper-layer-protocol ulp-http) 0 1) 0 test-ppid test-message))
 	       peer-addr)
     (let ((times (list)))
       (dotimes (i (1+ sut-maximum-assoc-retransmits))
