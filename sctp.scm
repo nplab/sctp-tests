@@ -83,12 +83,24 @@
 	       (vector-ref vector index))))
       #f))
 
-(define (sctp-receive-chunk predicate)
+(define* (sctp-receive-chunk predicate #:optional header)
   (let* ((result (sctp-receive))
-	 (chunks (cadr result)))
-    (if (vector-find chunks predicate)
-	result
-	(sctp-receive-chunk predicate))))
+	 (chunks (cadr result))
+	 (local-addr (caddr result))
+	 (peer-addr (cadddr result)))
+    (cond
+     ((and (not (equal? header #f))
+	   (= (vector-length chunks) 1)
+	   (heartbeat-chunk? (vector-ref chunks 0)))
+      (sctp-send header
+		 (vector (make-heartbeat-ack-chunk (get-heartbeat-parameter (vector-ref chunks 0))))
+		 peer-addr
+		 local-addr)
+      (sctp-receive-chunk predicate header))
+    ((vector-find chunks predicate)
+     result)
+    (else
+     (sctp-receive-chunk predicate)))))
 
 (define (sctp-receive-chunk-with-timeout predicate timeout)
   (let* ((result (sctp-receive timeout))

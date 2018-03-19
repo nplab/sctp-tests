@@ -69,7 +69,7 @@
 	       peer-addr)
     (let ((times (list)))
       (dotimes (i (1+ sut-maximum-assoc-retransmits))
-	       (sctp-receive-chunk data-chunk?)
+	       (sctp-receive-chunk data-chunk? header)
 	       (set! times (cons (get-internal-real-time) times)))
       (sctp-send header
 		 (vector (make-abort-chunk #f))
