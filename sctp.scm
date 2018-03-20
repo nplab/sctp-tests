@@ -55,7 +55,7 @@
 
 (define diameter-ppid   46)
 (define echo-ppid       38)
-(define http-ppid        0)
+(define http-ppid       63)
 (define m3ua-ppid        3)
 (define s1ap-ppid       18)
 
