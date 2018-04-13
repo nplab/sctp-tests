@@ -39,8 +39,9 @@
 (if (not (defined? 'sctp-send-with-crc32c))
    (use-modules (net sctp)))
 
-(if (string=? (major-version) "1")
-    (use-modules (ice-9 syncase)))
+(when (string=? (major-version) "1")
+    (use-modules (ice-9 syncase))
+    (use-modules (ice-9 optargs)))
 
 ;;; Just have a convenient way of simple looping.
 (define-syntax dotimes 
