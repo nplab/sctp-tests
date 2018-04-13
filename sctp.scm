@@ -83,7 +83,7 @@
 	       (vector-ref vector index))))
       #f))
 
-(define (sctp-receive-chunk predicate #:optional header)
+(define* (sctp-receive-chunk predicate #:optional header)
   (let* ((result (sctp-receive))
 	 (chunks (cadr result))
 	 (local-addr (caddr result))
