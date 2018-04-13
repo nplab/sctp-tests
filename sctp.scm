@@ -83,7 +83,7 @@
 	       (vector-ref vector index))))
       #f))
 
-(define* (sctp-receive-chunk predicate #:optional header)
+(define (sctp-receive-chunk predicate #:optional header)
   (let* ((result (sctp-receive))
 	 (chunks (cadr result))
 	 (local-addr (caddr result))
@@ -100,7 +100,7 @@
     ((vector-find chunks predicate)
      result)
     (else
-     (sctp-receive-chunk predicate)))))
+     (sctp-receive-chunk predicate header)))))
 
 (define (sctp-receive-chunk-with-timeout predicate timeout)
   (let* ((result (sctp-receive timeout))
