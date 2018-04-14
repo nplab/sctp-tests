@@ -10,9 +10,9 @@ set testcases = (sctp-as-v-1-5-2 \
                  sctp-as-i-1-8-3 \
                  sctp-as-i-1-8-4 \
                  sctp-as-o-1-9-2 \
-                 sctp-imh-i-3-1  \
                  sctp-at-v-2-2   \
                  sctp-at-i-2-11  \
+                 sctp-imh-i-3-1  \
                  sctp-imh-i-3-7  \
                  sctp-dm-o-4-7-2 \
                  sctp-fh-v-5-2   \
