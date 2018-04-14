@@ -342,20 +342,12 @@
     (sctp-send header
 	       (vector (make-shutdown-chunk (1-mod32 peer-tsn)))
 	       peer-addr)
-    (let ((result (sctp-receive-chunk-with-timeout shutdown-ack-chunk? 1000)))
-      (if (equal? result (list #f #f #f #f #f))
-	  (begin
-	    (sctp-send header
-		       (vector (make-abort-chunk #f))
-		       peer-addr)
-	    stt-test-result-failed)
-	  (let ((result (sctp-receive-chunk-with-timeout shutdown-ack-chunk? 5000)))
-	    (sctp-send header
-		       (vector (make-abort-chunk #f))
-		       peer-addr)
-	    (if (equal? result (list #f #f #f #f #f))
-		stt-test-result-failed
-		stt-test-result-passed))))))
+    (dotimes (i (1+ sut-maximum-assoc-retransmits))
+	     (sctp-receive-chunk shutdown-ack-chunk? header))
+    (sctp-send header
+	       (vector (make-abort-chunk #f))
+	       peer-addr)
+    stt-test-result-passed))
 ;;; (sctp-at-i-2-11 sut-is-server sut-addr tester-port sut-port)
 ;;; The test is passed if the SHUTDOWN-ACK message is retransmitted.
 
