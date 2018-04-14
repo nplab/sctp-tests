@@ -30,7 +30,7 @@
 
 ;;; $Id: sctp-param-testtool.scm,v 1.13 2014/11/17 14:55:29 tuexen Exp $
 
-(define sut-addr (make-ipv4-address "212.201.121.100"))
+(define sut-addr (make-ipv4-address "212.201.121.105"))
 (define sut-port 80)
 
 ;;; valid values are #t (true) or #f (false)
@@ -47,9 +47,11 @@
 ;;; tester-addr-2, connection setups using dual-homing will be used.
 ;;; When using the same address for tester-addr-1 and
 ;;; tester-addr-2, connection setups using single-homing will be used.
+;;; tester-addr-3 must be different from tester-addr-1 and tester-addr-2.
 (define tester-port 5001)
-(define tester-addr-1 (make-ipv4-address "31.133.153.29"))
-(define tester-addr-2 (make-ipv6-address "2001:67c:1232:144:8c2:3608:3aac:dbe"))
+(define tester-addr-1 (make-ipv4-address "217.249.127.211"))
+(define tester-addr-2 (make-ipv6-address "217.249.127.211"))
+(define tester-addr-3 (make-ipv4-address "192.0.2.1"))
 
 (define tester-os  2)
 (define tester-mis 2)

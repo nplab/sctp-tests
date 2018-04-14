@@ -812,7 +812,7 @@
 
 
 
-(define (sctp-as-o-1-9-2-help peer-server? peer-addr local-addr-1 local-addr-2 local-port peer-port)
+(define (sctp-as-o-1-9-2-help peer-server? peer-addr local-addr-1 local-addr-2 local-addr-3 local-port peer-port)
   (sctp-cleanup)
   (if peer-server?
       (let* ((answer (associate-from-port peer-addr local-port peer-port tester-os tester-mis))
@@ -820,8 +820,12 @@
 	(sctp-send (make-common-header (get-source-port header)
 				       (get-destination-port header)
 				       0)
-		   (vector (make-init-chunk (random (expt 2 32)) 1500 tester-os tester-mis 0 (vector (make-ipv4-address-parameter local-addr-1)
-												     (make-ipv4-address-parameter local-addr-2))))
+		   (vector (make-init-chunk (random (expt 2 32)) 1500 tester-os tester-mis 0  (if (equal? local-addr-1 local-addr-2)
+												  (vector (make-ipv4-address-parameter local-addr-1)
+													  (make-ipv4-address-parameter local-addr-3))
+												  (vector (make-ipv4-address-parameter local-addr-1)
+													  (make-ipv4-address-parameter local-addr-2)
+													  (make-ipv4-address-parameter local-addr-3)))))
 		   peer-addr)
 	(sctp-receive-chunk abort-chunk?)
 	(sctp-send header
@@ -835,7 +839,7 @@
       stt-test-result-not-applicable))
 
 (define (sctp-as-o-1-9-2 peer-server? peer-addr local-port peer-port)
-  (sctp-as-o-1-9-2-help peer-server? peer-addr tester-addr-1 tester-addr-2 local-port peer-port))
+  (sctp-as-o-1-9-2-help peer-server? peer-addr tester-addr-1 tester-addr-2 tester-addr-3 local-port peer-port))
 ;;; The SUT needs to be a server.
 ;;; (sctp-as-o-1-9-2 sut-is-server sut-addr tester-port sut-port)
 ;;; The test is passed if the SUT sends back an ABORT and
