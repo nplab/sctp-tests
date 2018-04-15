@@ -59,6 +59,10 @@
 (define m3ua-ppid        3)
 (define s1ap-ppid       18)
 
+(define heartbeat-mode-discard 1)
+(define heartbeat-mode-confirm 2)
+(define heartbeat-mode-reflect 3)
+
 (define get-header car)
 (define get-local-tsn cadr)
 (define get-remote-tsn caddr)
@@ -69,6 +73,8 @@
 (define stt-test-result-failed 1)
 (define stt-test-result-unknown 2)
 (define stt-test-result-not-applicable 253)
+
+(define secondary-path-confirmed #f)
 
 (define (vector-filter vector predicate)
   (list->vector (filter predicate (vector->list vector))))
@@ -91,11 +97,18 @@
     (cond
      ((and (not (equal? header #f))
 	   (= (vector-length chunks) 1)
-	   (heartbeat-chunk? (vector-ref chunks 0)))
+	   (heartbeat-chunk? (vector-ref chunks 0))
+	   (or (= tester-heartbeat-mode heartbeat-mode-reflect)
+	       (and (= tester-heartbeat-mode heartbeat-mode-confirm)
+		    (not secondary-path-confirmed)
+		    (equalp local-addr tester-addr-2)
+		    (not equalp tester-addr-1 tester-addr-2))))
       (sctp-send header
 		 (vector (make-heartbeat-ack-chunk (get-heartbeat-parameter (vector-ref chunks 0))))
 		 peer-addr
 		 local-addr)
+      (if (= tester-heartbeat-mode heartbeat-mode-confirm)
+	  (set! secondary-path-confirmed #t))
       (sctp-receive-chunk predicate header))
     ((vector-find chunks predicate)
      result)
@@ -136,7 +149,8 @@
 		       (vector (make-abort-chunk #t))
 		       peer-addr
 		       local-addr))))
-  (sctp-reset))
+  (sctp-reset)
+  (set! secondary-path-confirmed #f))
 
 (define (choose-local-tag)
    local-tag)

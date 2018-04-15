@@ -53,6 +53,9 @@
 (define tester-addr-2 (make-ipv6-address "217.249.127.211"))
 (define tester-addr-3 (make-ipv4-address "192.0.2.1"))
 
+;;; valid values are heartbeat-mode-discard, heartbeat-mode-confirm, heartbeat-mode-reflect
+(define tester-heartbeat-mode heartbeat-mode-reflect)
+
 (define tester-os  2)
 (define tester-mis 2)
 
