@@ -101,8 +101,8 @@
 	   (or (= tester-heartbeat-mode heartbeat-mode-reflect)
 	       (and (= tester-heartbeat-mode heartbeat-mode-confirm)
 		    (not secondary-path-confirmed)
-		    (equalp local-addr tester-addr-2)
-		    (not equalp tester-addr-1 tester-addr-2))))
+		    (equal? local-addr tester-addr-2)
+		    (not (equal? tester-addr-1 tester-addr-2))))
       (sctp-send header
 		 (vector (make-heartbeat-ack-chunk (get-heartbeat-parameter (vector-ref chunks 0))))
 		 peer-addr
