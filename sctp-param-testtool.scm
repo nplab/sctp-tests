@@ -50,7 +50,7 @@
 ;;; tester-addr-3 must be different from tester-addr-1 and tester-addr-2.
 (define tester-port 5001)
 (define tester-addr-1 (make-ipv4-address "217.249.127.211"))
-(define tester-addr-2 (make-ipv6-address "217.249.127.211"))
+(define tester-addr-2 (make-ipv4-address "217.249.127.211"))
 (define tester-addr-3 (make-ipv4-address "192.0.2.1"))
 
 ;;; valid values are heartbeat-mode-discard, heartbeat-mode-confirm, heartbeat-mode-reflect
