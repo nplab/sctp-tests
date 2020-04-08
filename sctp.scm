@@ -102,7 +102,7 @@
 	       (and (= tester-heartbeat-mode heartbeat-mode-confirm)
 		    (not secondary-path-confirmed)
 		    (equal? local-addr tester-addr-2)
-		    (not (equal? tester-addr-1 tester-addr-2))))
+		    (not (equal? tester-addr-1 tester-addr-2)))))
       (sctp-send header
 		 (vector (make-heartbeat-ack-chunk (get-heartbeat-parameter (vector-ref chunks 0))))
 		 peer-addr
@@ -110,10 +110,10 @@
       (if (= tester-heartbeat-mode heartbeat-mode-confirm)
 	  (set! secondary-path-confirmed #t))
       (sctp-receive-chunk predicate header))
-    ((vector-find chunks predicate)
-     result)
-    (else
-     (sctp-receive-chunk predicate header)))))
+     ((vector-find chunks predicate)
+      result)
+     (else
+      (sctp-receive-chunk predicate header)))))
 
 (define (sctp-receive-chunk-with-timeout predicate timeout)
   (let* ((result (sctp-receive timeout))
