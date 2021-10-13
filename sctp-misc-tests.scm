@@ -322,3 +322,99 @@
 	  (sctp-receive-chunk cookie-ack-chunk?)
 	  stt-test-result-passed))
       stt-test-result-not-applicable))
+
+(define (sctp-init-with-zero-initiate-tag peer-server? peer-addr local-port peer-port)
+  (sctp-cleanup)
+  ;; set up a asscociation first.
+  (let* ((tcb (if peer-server?
+		  (associate-from-port peer-addr local-port peer-port tester-os tester-mis)
+		  (accept-association tester-os tester-mis)))
+	 (peer-addr (get-peer-addr tcb))
+	 (header (get-header tcb)))
+    ;; Send INIT chunk with initiate tag 0
+    (sctp-send (make-common-header local-port peer-port 0)
+	       (vector (make-init-chunk 0 1500 tester-os tester-mis 0 (vector)))
+	       peer-addr)
+    (let ((result (sctp-receive 1000)))
+      (sctp-send header
+		 (vector (make-abort-chunk #f))
+		 peer-addr)
+      (if (equal? result (list #f #f #f #f #f))
+	  stt-test-result-passed
+	  (let ((chunk (vector-ref (cadr result) 0)))
+	    (if (and (abort-chunk? chunk)
+		     (not (= local-tag (get-verification-tag (car result)))))
+		stt-test-result-passed
+		stt-test-result-failed))))))
+
+(define (sctp-init-with-zero-a-rwnd peer-server? peer-addr local-port peer-port)
+  (sctp-cleanup)
+  ;; set up a asscociation first.
+  (let* ((tcb (if peer-server?
+		  (associate-from-port peer-addr local-port peer-port tester-os tester-mis)
+		  (accept-association tester-os tester-mis)))
+	 (peer-addr (get-peer-addr tcb))
+	 (header (get-header tcb)))
+    ;; Send INIT chunk with initiate tag 0
+    (sctp-send (make-common-header local-port peer-port 0)
+	       (vector (make-init-chunk 1 0 tester-os tester-mis 0 (vector)))
+	       peer-addr)
+    (let ((result (sctp-receive 1000)))
+      (sctp-send header
+		 (vector (make-abort-chunk #f))
+		 peer-addr)
+      (if (equal? result (list #f #f #f #f #f))
+	  stt-test-result-passed
+	  (let ((chunk (vector-ref (cadr result) 0)))
+	    (if (and (abort-chunk? chunk)
+		     (not (= local-tag (get-verification-tag (car result)))))
+		stt-test-result-passed
+		stt-test-result-failed))))))
+
+(define (sctp-init-with-zero-os peer-server? peer-addr local-port peer-port)
+  (sctp-cleanup)
+  ;; set up a asscociation first.
+  (let* ((tcb (if peer-server?
+		  (associate-from-port peer-addr local-port peer-port tester-os tester-mis)
+		  (accept-association tester-os tester-mis)))
+	 (peer-addr (get-peer-addr tcb))
+	 (header (get-header tcb)))
+    ;; Send INIT chunk with initiate tag 0
+    (sctp-send (make-common-header local-port peer-port 0)
+	       (vector (make-init-chunk 1 1500 0 tester-mis 0 (vector)))
+	       peer-addr)
+    (let ((result (sctp-receive 1000)))
+      (sctp-send header
+		 (vector (make-abort-chunk #f))
+		 peer-addr)
+      (if (equal? result (list #f #f #f #f #f))
+	  stt-test-result-passed
+	  (let ((chunk (vector-ref (cadr result) 0)))
+	    (if (and (abort-chunk? chunk)
+		     (not (= local-tag (get-verification-tag (car result)))))
+		stt-test-result-passed
+		stt-test-result-failed))))))
+
+(define (sctp-init-with-zero-mis peer-server? peer-addr local-port peer-port)
+  (sctp-cleanup)
+  ;; set up a asscociation first.
+  (let* ((tcb (if peer-server?
+		  (associate-from-port peer-addr local-port peer-port tester-os tester-mis)
+		  (accept-association tester-os tester-mis)))
+	 (peer-addr (get-peer-addr tcb))
+	 (header (get-header tcb)))
+    ;; Send INIT chunk with initiate tag 0
+    (sctp-send (make-common-header local-port peer-port 0)
+	       (vector (make-init-chunk 1 1500 tester-os 0 0 (vector)))
+	       peer-addr)
+    (let ((result (sctp-receive 1000)))
+      (sctp-send header
+		 (vector (make-abort-chunk #f))
+		 peer-addr)
+      (if (equal? result (list #f #f #f #f #f))
+	  stt-test-result-passed
+	  (let ((chunk (vector-ref (cadr result) 0)))
+	    (if (and (abort-chunk? chunk)
+		     (not (= local-tag (get-verification-tag (car result)))))
+		stt-test-result-passed
+		stt-test-result-failed))))))
