@@ -342,10 +342,9 @@
       (if (equal? result (list #f #f #f #f #f))
 	  stt-test-result-passed
 	  (let ((chunk (vector-ref (cadr result) 0)))
-	    (if (and (abort-chunk? chunk)
-		     (not (= local-tag (get-verification-tag (car result)))))
-		stt-test-result-passed
-		stt-test-result-failed))))))
+	    (if (abort-chunk? chunk)
+		stt-test-result-failed
+		stt-test-result-passed))))))
 
 (define (sctp-init-with-zero-a-rwnd peer-server? peer-addr local-port peer-port)
   (sctp-cleanup)
@@ -367,7 +366,7 @@
 	  stt-test-result-passed
 	  (let ((chunk (vector-ref (cadr result) 0)))
 	    (if (and (abort-chunk? chunk)
-		     (not (= local-tag (get-verification-tag (car result)))))
+		     (= 1 (get-verification-tag (car result))))
 		stt-test-result-passed
 		stt-test-result-failed))))))
 
@@ -391,7 +390,7 @@
 	  stt-test-result-passed
 	  (let ((chunk (vector-ref (cadr result) 0)))
 	    (if (and (abort-chunk? chunk)
-		     (not (= local-tag (get-verification-tag (car result)))))
+		     (= 1 (get-verification-tag (car result))))
 		stt-test-result-passed
 		stt-test-result-failed))))))
 
@@ -415,6 +414,6 @@
 	  stt-test-result-passed
 	  (let ((chunk (vector-ref (cadr result) 0)))
 	    (if (and (abort-chunk? chunk)
-		     (not (= local-tag (get-verification-tag (car result)))))
+		     (= 1 (get-verification-tag (car result))))
 		stt-test-result-passed
 		stt-test-result-failed))))))
