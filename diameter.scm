@@ -55,6 +55,15 @@
 (define vodafone-information-technology-and-technology-management-pen 12645)
 (define nokia-networks-pen 28458)
 
+(define diameter-common-message-app-id 0)
+(define 3gpp-cx-app-id 16777216)
+(define 3gpp-sh-app-id 16777217)
+(define 3gpp-wx-app-id 16777219)
+(define 3gpp-zh-app-id 16777221)
+(define 3gpp-s6a-app-id 16777251)
+(define 3gpp-swx-app-id 16777265)
+(define nsn-hd-application-app-id 16777317)
+
 (define host-ip-address-avp-code 257)
 (define auth-application-id-code 258)
 (define acct-application-id-code 259)
@@ -79,10 +88,10 @@
   (make-avp acct-application-id-code mandatory-flag (uint32->bytes id)))
 ;;; (make-acct-application-id-avp 28458)
 
-(define (make-vendor-specific-application-id-avp vendor-id application-id)
-  (make-avp vendor-specific-application-id-code mandatory-flag (append (make-vendor-id-avp vendor-id)
-								       (make-auth-application-id-avp application-id))))
-;;; (make-vendor-specific-application-id-avp 1 2)
+(define (make-vendor-specific-application-id-avp pen app-id)
+  (make-avp vendor-specific-application-id-code mandatory-flag (append (make-vendor-id-avp pen)
+								       (make-auth-application-id-avp app-id))))
+;;; (make-vendor-specific-application-id-avp nokia-networks-pen nsn-hd-application-app-id)
 
 (define (make-origin-host-avp origin-host)
   (make-avp origin-host-avp-code mandatory-flag (string->bytes origin-host)))
@@ -117,7 +126,6 @@
 (define request-flag #b10000000)
 (define no-flag 0)
 (define version 1)
-(define diameter-common-message-app-id 0)
 
 (define (make-diameter-message flags code app-id h2h-id e2e-id avps)
   (append (uint8->bytes version)
