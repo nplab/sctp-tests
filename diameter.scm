@@ -50,11 +50,17 @@
 	  data
 	  (padding-bytes data)))
 
+(define siemens-ag-pen 4329)
+(define 3gpp-pen 10415)
+(define vodafone-information-technology-and-technology-management-pen 12645)
+(define nokia-networks-pen 28458)
+
 (define host-ip-address-avp-code 257)
 (define auth-application-id-code 258)
 (define acct-application-id-code 259)
 (define vendor-specific-application-id-code 260)
 (define origin-host-avp-code 264)
+(define supported-vendor-id-avp-code 265)
 (define vendor-id-avp-code 266)
 (define result-avp-code 268)
 (define product-name-avp-code 269)
@@ -82,9 +88,13 @@
   (make-avp origin-host-avp-code mandatory-flag (string->bytes origin-host)))
 ;;; (make-origin-host-avp "www1.sctp.de")
 
-(define (make-vendor-id-avp id)
-  (make-avp vendor-id-avp-code mandatory-flag (uint32->bytes id)))
-;;; (make-vendor-id-avp 28458)
+(define (make-vendor-id-avp pen)
+  (make-avp vendor-id-avp-code mandatory-flag (uint32->bytes pen)))
+;;; (make-vendor-id-avp nokia-networks-pen)
+
+(define (make-supported-vendor-id-avp pen)
+  (make-avp supported-vendor-id-avp-code mandatory-flag (uint32->bytes pen)))
+;;; (make-supported-vendor-id-avp nokia-networks-pen)
 
 (define diameter-success 2001)
 (define (make-result-avp result)
