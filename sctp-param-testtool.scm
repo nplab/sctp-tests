@@ -75,7 +75,16 @@
 (define diameter-host-ip-address "192.168.115.132")
 (define diameter-vendor-id 1)
 (define diameter-product-name "stt")
-(define diameter-cer-avps (list))
+(define diameter-cer-avps (list (make-supported-vendor-id-avp 3gpp-pen)
+				(make-supported-vendor-id-avp vodafone-information-technology-and-technology-management-pen)
+				(make-supported-vendor-id-avp siemens-ag-pen)
+				(make-supported-vendor-id-avp nokia-networks-pen)
+				(make-vendor-specific-application-id-avp 3gpp-pen 3gpp-zh-app-id)
+				(make-vendor-specific-application-id-avp 3gpp-pen 3gpp-swx-app-id)
+				(make-vendor-specific-application-id-avp 3gpp-pen 3gpp-s6a-app-id)
+				(make-vendor-specific-application-id-avp 3gpp-pen 3gpp-sh-app-id)
+				(make-vendor-specific-application-id-avp 3gpp-pen 3gpp-wx-app-id)
+				(make-vendor-specific-application-id-avp nokia-networks-pen nsn-hd-application-app-id)))
 
 (define diameter-sut-sends-initial-watchdog-request #t)
 
