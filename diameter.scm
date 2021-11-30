@@ -149,15 +149,15 @@
   (bytes->uint32 (list-tail l 16)))
 ;;; (get-end-to-end-id (make-diameter-message request-flag DWR diameter-common-message-app-id 2 3 (list)))
 
-(define (make-capability-exchange-request app-id h2h-id e2e-id origin-host origin-realm host-ip-address vendor-id product-name)
+(define (make-capability-exchange-request app-id h2h-id e2e-id origin-host origin-realm host-ip-address vendor-id product-name avps)
   (make-diameter-message request-flag CER app-id h2h-id e2e-id
-			 (list (make-origin-host-avp origin-host)
-			       (make-origin-realm-avp origin-realm)
-			       (make-host-ip-address-avp host-ip-address)
-			       (make-auth-application-id-avp 16777251)
-			       (make-vendor-id-avp vendor-id)
-			       (make-product-name-avp product-name))))
-;;; (make-capability-exchange-request diameter-common-message-app-id 1 2 "a.b" "c.d" "1.1.1.1" 123 "STT")
+			 (append (list (make-origin-host-avp origin-host)
+				       (make-origin-realm-avp origin-realm)
+				       (make-host-ip-address-avp host-ip-address)
+				       (make-vendor-id-avp vendor-id)
+				       (make-product-name-avp product-name))
+				 avps)))
+;;; (make-capability-exchange-request diameter-common-message-app-id 1 2 "a.b" "c.d" "1.1.1.1" nokia-networks-pen "STT" (list))
 
 (define (make-capability-exchange-answer app-id h2h-id e2e-id result origin-host origin-realm host-ip-address vendor-id product-name)
   (make-diameter-message no-flag CEA app-id h2h-id e2e-id
@@ -165,10 +165,9 @@
 			       (make-origin-host-avp origin-host)
 			       (make-origin-realm-avp origin-realm)
 			       (make-host-ip-address-avp host-ip-address)
-			       (make-auth-application-id-avp 16777251)
 			       (make-vendor-id-avp vendor-id)
 			       (make-product-name-avp product-name))))
-;;; (make-capability-exchange-answer diameter-common-message-app-id 1 2 diameter-success "a.b" "c.d" "1.1.1.1" 123 "STT")
+;;; (make-capability-exchange-answer diameter-common-message-app-id 1 2 diameter-success "a.b" "c.d" "1.1.1.1" nokia-networks-pen "STT")
 
 (define (make-capability-exchange-answer-from-request request origin-host origin-realm host-ip-address vendor-id product-name)
   (make-capability-exchange-answer (get-app-id request)

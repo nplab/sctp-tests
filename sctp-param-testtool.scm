@@ -75,6 +75,7 @@
 (define diameter-host-ip-address "192.168.115.132")
 (define diameter-vendor-id 1)
 (define diameter-product-name "stt")
+(define diameter-cer-avps (list))
 
 (define diameter-sut-sends-initial-watchdog-request #t)
 
@@ -91,7 +92,8 @@
 											     diameter-origin-realm
 											     diameter-host-ip-address
 											     diameter-vendor-id
-											     diameter-product-name)))
+											     diameter-product-name
+											     diameter-cer-avps)))
 
 (define (make-echo-test-message length total-length)
   (make-random-bytes length))
