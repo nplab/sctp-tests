@@ -253,12 +253,13 @@
 	 (local-tsn (get-local-tsn tcb))
 	 (peer-addr (get-peer-addr tcb))
 	 (peer-tsn (get-remote-tsn tcb)))
+    (sctp-receive-chunk data-chunk? header)
     (sctp-send header 
-	       (vector (make-data-chunk local-tsn 1 0 test-ppid test-message))
+	       (vector (make-sack-chunk peer-tsn 1500 #() #())
+	               (make-data-chunk local-tsn 1 0 test-ppid test-message))
 	       peer-addr)
-    (sctp-receive-chunk data-chunk?)
-    (dotimes (i sut-maximum-assoc-retransmits)
-	     (sctp-receive-chunk data-chunk?))
+    (dotimes (i (1+ sut-maximum-assoc-retransmits))
+	     (sctp-receive-chunk data-chunk? header))
     (sctp-send header
 	       (vector (make-abort-chunk #f))
 	       peer-addr)
