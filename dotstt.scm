@@ -57,6 +57,7 @@
 		    "sctp-m-tests.scm"
 		    "sctp-rt-tests.scm"
 		    "sctp-bundling-tests.scm"
+		    "sctp-checksum-tests.scm"
 		    "sctp-misc-tests.scm"))
 
 (map (lambda (file) (load-from-path (string-append dir file))) files)
