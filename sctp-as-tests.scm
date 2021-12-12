@@ -293,7 +293,7 @@
 	  (if (equal? result (list #f #f #f #f #f))
 	      stt-test-result-failed
 	      stt-test-result-passed)))
-      stt-test-result-failed))
+      stt-test-result-not-applicable))
 ;;; The IUT needs to be a server.
 ;;; (sctp-as-v-1-6-1 sut-is-server sut-addr tester-port sut-port)
 ;;; The test is passed if an INIT-ACK message is received.
@@ -315,7 +315,7 @@
 	  (if (equal? result (list #f #f #f #f #f))
 	      stt-test-result-failed
 	      stt-test-result-passed)))
-      stt-test-result-failed))
+      stt-test-result-not-applicable))
 
 
 (define (sctp-as-v-1-6-2 peer-server? peer-addr local-port peer-port)
