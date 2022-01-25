@@ -338,10 +338,9 @@
 	 (header (get-header tcb))
 	 (peer-addr (get-peer-addr tcb))
 	 (peer-tsn (get-peer-tsn tcb)))
-    (sctp-receive-chunk data-chunk? header)
     ;; send a SHUTDOWN chunk
     (sctp-send header
-	       (vector (make-shutdown-chunk peer-tsn))
+	       (vector (make-shutdown-chunk (1-mod32 peer-tsn)))
 	       peer-addr)
     (dotimes (i (1+ sut-maximum-assoc-retransmits))
 	     (sctp-receive-chunk shutdown-ack-chunk? header))

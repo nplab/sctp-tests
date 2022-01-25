@@ -115,6 +115,25 @@
      (else
       (sctp-receive-chunk predicate header)))))
 
+(define (sctp-ensure-path-verification header)
+  (unless (or secondary-path-confirmed
+	      (not (= tester-heartbeat-mode heartbeat-mode-confirm))
+	      (equal? tester-addr-1 tester-addr-2))
+    (let* ((result (sctp-receive))
+	   (chunks (cadr result))
+	   (local-addr (caddr result))
+	   (peer-addr (cadddr result)))
+      (if (and (= (vector-length chunks) 1)
+	       (heartbeat-chunk? (vector-ref chunks 0))
+	       (equal? local-addr tester-addr-2))
+	  (begin
+	    (sctp-send header
+		       (vector (make-heartbeat-ack-chunk (get-heartbeat-parameter (vector-ref chunks 0))))
+		       peer-addr
+		       local-addr)
+	    (set! secondary-path-confirmed #t))
+	  (sctp-ensure-path-verification header)))))
+
 (define (sctp-receive-chunk-with-timeout predicate timeout)
   (let* ((result (sctp-receive timeout))
 	 (chunks (cadr result)))
@@ -184,10 +203,13 @@
       (sleep tester-handshake-wait)
       (cond
        ((= upper-layer-protocol ulp-echo)
+	(sctp-ensure-path-verification header)
 	(list header local-tsn (get-initial-tsn init-ack) peer-addr))
        ((= upper-layer-protocol ulp-http)
+	(sctp-ensure-path-verification header)
 	(list header local-tsn (get-initial-tsn init-ack) peer-addr))
        ((= upper-layer-protocol ulp-m3ua)
+	(sctp-ensure-path-verification header)
 	(list header local-tsn (get-initial-tsn init-ack) peer-addr))
        ((= upper-layer-protocol ulp-diameter)
 	(sctp-send header
@@ -196,12 +218,12 @@
 					    diameter-capability-exchange-request
 					    #f #t #t))
 		   peer-addr)
-	(sctp-receive-chunk data-chunk?)
+	(sctp-receive-chunk data-chunk? header)
 	(sctp-send header
 		   (vector (make-sack-chunk (get-initial-tsn init-ack) 1500 #() #()))
 		   peer-addr)
 	(if diameter-sut-sends-initial-watchdog-request
-	    (let* ((result (sctp-receive-chunk data-chunk?))
+	    (let* ((result (sctp-receive-chunk data-chunk? header))
 		   (data-chunk (vector-find (cadr result) data-chunk?))
 		   (watchdog-request (vector->list (get-user-data data-chunk))))
 	      (sctp-send header
@@ -218,8 +240,11 @@
 ;;;			 peer-addr)
 ;;;	      (sctp-receive-chunk sack-chunk?)
 ;;;	      (list header (+mod32 local-tsn 2) (+mod32 (get-initial-tsn init-ack) 2) peer-addr))
+	      (sctp-ensure-path-verification header)
 	      (list header (+mod32 local-tsn 1) (+mod32 (get-initial-tsn init-ack) 2) peer-addr))
-	    (list header (+mod32 local-tsn 1) (+mod32 (get-initial-tsn init-ack) 1) peer-addr)))
+	    (begin
+	      (sctp-ensure-path-verification header)
+	      (list header (+mod32 local-tsn 1) (+mod32 (get-initial-tsn init-ack) 1) peer-addr))))
        (else
 	(error "Unsupported upper layer protocol:" upper-layer-protocol))))))
 
@@ -248,33 +273,34 @@
       (sleep tester-handshake-wait)
       (cond 
        ((= upper-layer-protocol ulp-echo)
+	(sctp-ensure-path-verification header)
 	(list header local-tsn (get-initial-tsn init) peer-addr))
        ((= upper-layer-protocol ulp-http)
+	(sctp-ensure-path-verification header)
 	(list header local-tsn (get-initial-tsn init) peer-addr))
        ((= upper-layer-protocol ulp-m3ua)
-	(sctp-receive-chunk data-chunk?)
+	(sctp-receive-chunk data-chunk? header)
 	(sctp-send header
 		   (vector (make-sack-chunk (get-initial-tsn init) 1500 #() #())
 			   (make-data-chunk (+mod32 local-tsn 0) 0 0 test-ppid m3ua-aspup-ack-message #f #t #t)
 			   (make-data-chunk (+mod32 local-tsn 1) 0 1 test-ppid m3ua-ntfy-inactive-message #f #t #t))
 		   peer-addr)
-	(sctp-receive-chunk data-chunk?)
+	(sctp-receive-chunk data-chunk? header)
 	(sctp-send header
 		   (vector (make-sack-chunk (1+mod32 (get-initial-tsn init)) 1500 #() #())
 			   (make-data-chunk (+mod32 local-tsn 2) 0 2 test-ppid m3ua-aspac-ack-message #f #t #t)
 			   (make-data-chunk (+mod32 local-tsn 3) 0 3 test-ppid m3ua-ntfy-active-message #f #t #t))
 		   peer-addr)
 	(sctp-receive-chunk sack-chunk?)
+	(sctp-ensure-path-verification header)
 	(list header (+mod32 local-tsn 4) (+mod32 (get-initial-tsn init) 2) peer-addr))
        ((= upper-layer-protocol ulp-diameter)
-	(let* ((result (sctp-receive-chunk data-chunk?))
+	(let* ((result (sctp-receive-chunk data-chunk? header))
 	       (data-chunk (vector-find (cadr result) data-chunk?))
 	       (exchange-request (vector->list (get-user-data data-chunk))))
 	  (sctp-send header
-		     (vector (make-sack-chunk (get-initial-tsn init) 1500 #() #()))
-		     peer-addr)
-	  (sctp-send header
-		     (vector (make-data-chunk (+mod32 local-tsn 0) 0 0
+		     (vector (make-sack-chunk (get-initial-tsn init) 1500 #() #())
+			     (make-data-chunk (+mod32 local-tsn 0) 0 0
 					      diameter-ppid
 					      (list->vector (make-capability-exchange-answer-from-request exchange-request
 													  diameter-origin-host
@@ -286,14 +312,17 @@
 		     peer-addr)
 	  (sctp-receive-chunk sack-chunk?))
 	(if diameter-sut-sends-initial-watchdog-request
-	    (let* ((result (sctp-receive-chunk data-chunk?))
+	    (let* ((result (sctp-receive-chunk data-chunk? header))
 		   (data-chunk (vector-find (cadr result) data-chunk?))
 		   (watchdog-request (vector->list (get-user-data data-chunk))))
 	      (sctp-send header
 			 (vector (make-sack-chunk (+mod32 (get-initial-tsn init) 1) 1500 #() #()))
 			 peer-addr)
+	      (sctp-ensure-path-verification header)
 	      (list header (+mod32 local-tsn 1) (+mod32 (get-initial-tsn init) 2) peer-addr))
-	    (list header (+mod32 local-tsn 1) (+mod32 (get-initial-tsn init) 1) peer-addr)))
+	    (begin
+	      (sctp-ensure-path-verification header)
+	      (list header (+mod32 local-tsn 1) (+mod32 (get-initial-tsn init) 1) peer-addr))))
        (else
 	(error "Unsupported upper layer protocol:" upper-layer-protocol))))))
 
