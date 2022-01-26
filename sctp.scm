@@ -75,6 +75,7 @@
 (define stt-test-result-not-applicable 253)
 
 (define secondary-path-confirmed #f)
+(define secondary-path-addr '())
 
 (define (vector-filter vector predicate)
   (list->vector (filter predicate (vector->list vector))))
@@ -125,7 +126,7 @@
 	   (peer-addr (cadddr result)))
       (if (and (= (vector-length chunks) 1)
 	       (heartbeat-chunk? (vector-ref chunks 0))
-	       (equal? local-addr tester-addr-2))
+	       (equal? local-addr secondary-path-addr))
 	  (begin
 	    (sctp-send header
 		       (vector (make-heartbeat-ack-chunk (get-heartbeat-parameter (vector-ref chunks 0))))
@@ -169,7 +170,8 @@
 		       peer-addr
 		       local-addr))))
   (sctp-reset)
-  (set! secondary-path-confirmed #f))
+  (set! secondary-path-confirmed #f)
+  (set! secondary-path-addr '()))
 
 (define (choose-local-tag)
    local-tag)
@@ -195,10 +197,15 @@
 	   (parameters   (get-parameters init-ack))
 	   (state-cookie (vector-find parameters cookie-parameter?))
 	   (peer-tag     (get-initiate-tag init-ack))
+	   (local-addr   (caddr answer))
 	   (header       (make-common-header local-port peer-port peer-tag)))
       (sctp-send header 
 		 (vector (make-cookie-echo-chunk (get-cookie-parameter-cookie state-cookie)))
 		 peer-addr)
+      (unless (equal? tester-addr-1 tester-addr-2)
+	(if (equal? tester-addr-1 local-addr)
+	    (set! secondary-path-addr tester-addr-2)
+	    (set! secondary-path-addr tester-addr-1)))
       (sctp-receive-chunk cookie-ack-chunk?)
       (sleep tester-handshake-wait)
       (cond
@@ -252,13 +259,14 @@
   (let ((local-tag (choose-local-tag))
 	(local-tsn (random (expt 2 32))))
     (let* ((answer (sctp-receive-chunk init-chunk?))
-	   (init     (vector-ref (cadr answer) 0))
+	   (init       (vector-ref (cadr answer) 0))
 	   (local-port (get-destination-port (car answer)))
 	   (peer-port  (get-source-port (car answer)))
-	   (peer-addr (cadddr answer))
-	   (parameters   (get-parameters init))
-	   (peer-tag     (get-initiate-tag init))
-	   (header       (make-common-header local-port peer-port peer-tag)))
+	   (local-addr (caddr answer))
+	   (peer-addr  (cadddr answer))
+	   (parameters (get-parameters init))
+	   (peer-tag   (get-initiate-tag init))
+	   (header (make-common-header local-port peer-port peer-tag)))
       (sctp-send header
 		 (vector (make-init-ack-chunk local-tag 1500 os mis local-tsn (list->vector (cons (make-cookie-parameter (vector 1))
 												  (if (equal? tester-addr-1 tester-addr-2)
@@ -266,6 +274,10 @@
 												      (list (make-ipv4-address-parameter tester-addr-1)
 													    (make-ipv4-address-parameter tester-addr-2)))))))
 		 peer-addr)
+      (unless (equal? tester-addr-1 tester-addr-2)
+	(if (equal? tester-addr-1 local-addr)
+	    (set! secondary-path-addr tester-addr-2)
+	    (set! secondary-path-addr tester-addr-1)))
       (sctp-receive-chunk cookie-echo-chunk?)
       (sctp-send header
 		 (vector (make-cookie-ack-chunk))
