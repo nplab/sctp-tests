@@ -3,12 +3,12 @@
 The tests are based on the ETSI test specification
 [ETSI TS 102 369](http://www.etsi.org/deliver/etsi_ts/102300_102399/102369/01.01.01_60/ts_102369v010101p.pdf).
 
-This tool uses [guile](https://www.gnu.org/software/guile/) and its extension 
+These tests use [guile](https://www.gnu.org/software/guile/) and its extension 
 This tool uses [stt](https://github.com/nplab/stt).
 Please see [README](https://github.com/nplab/stt#installation) for installation instructions.
 
 ## Installation
-For downloading the tool and the tests run
+For downloading the tests run
 ```
 git clone https://github.com/nplab/sctp-tests.git
 cd sctp-tests
