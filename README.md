@@ -10,8 +10,8 @@ Please see [README](https://github.com/nplab/stt#installation) for installation 
 ## Installation
 For downloading the tool and the tests run
 ```
-git clone https://github.com/nplab/sctp-testtool.git
-cd sctp-testtool
+git clone https://github.com/nplab/sctp-tests.git
+cd sctp-tests
 ```
 and change the line in `dotstt.scm`
 ```
