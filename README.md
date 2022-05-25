@@ -61,11 +61,11 @@ You can run specfic tests using the `runsctptest`. For example, to run the `sctp
 ```
 runsctptest sctp-as-v-1-1-1
 ```
-You can also run a selection of client tests by using the `tcsh` script
+You can also run a selection of client tests by using the `sh` script
 ```
 sctp-tests/sctp-client-tests
 ```
-or a selection of server tests by running the `tcsh` script
+or a selection of server tests by running the `sh` script
 ```
 sctp-tests/sctp-server-tests
 ```
