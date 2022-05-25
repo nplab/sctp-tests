@@ -67,7 +67,7 @@ sctp-tests/sctp-client-tests
 ```
 or a selection of server tests by running the `tcsh` script
 ```
-sctp-tests sctp-server-tests
+sctp-tests/sctp-server-tests
 ```
 Please note that you must verify the verdict by double checking the message flows.
 This can be done by using a protocol analyzer like [Wireshark](https://www.wireshark.org).
