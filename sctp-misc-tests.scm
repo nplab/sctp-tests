@@ -124,7 +124,7 @@
       stt-test-result-not-applicable))
 
 (define (sctp-init-with-set-primary-valid-address peer-server? peer-addr local-port peer-port)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (if peer-server?
       (let ((local-tag (choose-local-tag))
 	    (os 1)
@@ -141,7 +141,7 @@
       stt-test-result-not-applicable))
 
 (define (sctp-init-with-set-primary-invalid-address peer-server? peer-addr local-port peer-port)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (if peer-server?
       (let ((local-tag (choose-local-tag))
 	    (os 1)
@@ -158,7 +158,7 @@
       stt-test-result-not-applicable))
 
 (define (sctp-init-with-set-primary-hostname-address peer-server? peer-addr local-port peer-port)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (if peer-server?
       (let ((local-tag (choose-local-tag))
 	    (os 1)
@@ -175,7 +175,7 @@
       stt-test-result-not-applicable))
 
 (define (sctp-init-ack-with-set-primary-valid-address peer-server? peer-addr local-port peer-port)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (if (not peer-server?)
       (let ((local-tag (choose-local-tag))
 	    (os 1)
@@ -205,7 +205,7 @@
 
 
 (define (sctp-init-ack-with-set-primary-invalid-address peer-server? peer-addr local-port peer-port)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (if (not peer-server?)
       (let ((local-tag (choose-local-tag))
 	    (os 1)
@@ -234,7 +234,7 @@
       stt-test-result-not-applicable))
 
 (define (sctp-init-ack-with-set-primary-hostname-address peer-server? peer-addr local-port peer-port)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (if (not peer-server?)
       (let ((local-tag (choose-local-tag))
 	    (os 1)

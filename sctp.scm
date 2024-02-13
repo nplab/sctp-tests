@@ -42,6 +42,8 @@
 ;;; 07.12.2004 heartbeat message added.
 ;;; 19.07.2006 make-m3ua-beat-message added.
 
+(define sctp-over-udp-port 9899)
+
 (define ulp-diameter     1)
 (define ulp-echo         2)
 (define ulp-http         3)
@@ -151,7 +153,7 @@
         (sctp-send (make-common-header tester-port sut-port local-tag)
 		   (vector (make-abort-chunk #t))
 		   sut-addr)))
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (if (not sut-is-server)
       (let* ((answer (sctp-receive))
 	     (local-port (get-destination-port (car answer)))
@@ -169,7 +171,7 @@
 		       (vector (make-abort-chunk #t))
 		       peer-addr
 		       local-addr))))
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (set! secondary-path-confirmed #f)
   (set! secondary-path-addr '()))
 

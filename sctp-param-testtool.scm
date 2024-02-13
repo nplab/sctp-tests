@@ -30,6 +30,9 @@
 
 ;;; $Id: sctp-param-testtool.scm,v 1.13 2014/11/17 14:55:29 tuexen Exp $
 
+(define sctp-remote-udp-encaps-port 0)
+(define sctp-local-udp-encaps-port 0)
+
 (define sut-addr (make-ipv4-address "212.201.121.105"))
 (define sut-port 80)
 

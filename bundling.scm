@@ -95,7 +95,7 @@
 
 
 (define (send-bundled-heartbeat-chunks number-of-chunks remote-address remote-port)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (let* ((answer (associate remote-address remote-port))
 	 (chunk  (make-heartbeat-chunk (make-heartbeat-parameter (vector))))
 	 (chunks (make-vector number-of-chunks))
@@ -110,7 +110,7 @@
 ;;; (send-bundled-heartbeat-chunks 8 sut-addr sut-port)
 
 (define (send-bundled-unknown-chunks number-of-chunks remote-address remote-port)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (let* ((answer (associate remote-address remote-port))
 	 (chunk  (make-chunk #xf7 0 (vector)))
 	 (chunks (make-vector number-of-chunks))
@@ -126,7 +126,7 @@
 ;;;(send-bundled-unknown-chunks 8000 sut-addr sut-port)
 
 (define (send-bundled-shutdown-ack-chunks number-of-chunks local-address local-port remote-address remote-port)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (let* ((header (make-common-header local-port remote-port 1))
 	 (chunk  (make-shutdown-ack-chunk))
 	 (chunks (make-vector number-of-chunks)))

@@ -93,7 +93,7 @@
   (sctp-send-bundled-unknown-chunks-help  peer-server? peer-addr local-port peer-port 10))
 
 (define (sctp-send-bundled-shutdown-ack-chunks-help peer-server? peer-addr local-port peer-port number-of-chunks)
-  (sctp-reset)
+  (sctp-reset sctp-local-udp-encaps-port)
   (let* ((header (make-common-header local-port peer-port 1))
 	 (chunk  (make-shutdown-ack-chunk))
 	 (chunks (make-vector number-of-chunks)))
